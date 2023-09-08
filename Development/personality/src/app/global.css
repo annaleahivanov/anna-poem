@@ -1,0 +1,23 @@
+html,
+body {
+  color: #f3eef7;
+  background: #f3eef7;
+}
+.container{
+  position:relative;
+}
+button {
+  color: #f3eef7;
+  background-color:#5a00a7;
+  text-align: center;
+  font-size: 30px;
+}
+img {
+  top: 0%;
+  width: 100%;
+  font-size: 18px;
+  display:inline-block;
+  margin: 0 auto; 
+  align-items: center;
+  justify-content: center
+}
