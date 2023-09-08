@@ -73,29 +73,32 @@ const HomePage = () => {
         Submit
       </button></div>
 
-      {submittedOptions.length > 0 && (
+     {/*  {submittedOptions.length > 0 && (
         <div className={styles.resultContainer}>
-          <h3 className={styles.resultTitle}>Submitted Options:</h3>
+          <h3 className={styles.resultTitle}>Loading...</h3>
           <div className={styles.generatedText}>
-            {submittedOptions.map(({ selected, notSelected, text }, index) => (
+            <p> Based on your selected options, you are more... </p> */}
+{/*             {submittedOptions.map(({ selected, notSelected, text }, index) => (
               <p key={index}>
                 You are more {selected ? text : notSelected} than{' '}
                 {selected ? notSelected : text}
-              </p>
-            ))}
-          </div>
+              </p> */}
+            
+         {/*  </div>
         </div>
       )}
-
+ */}
       {submittedOptions.length > 0 && (
         <div className={styles.resultContainer}>
-          <h3 className={styles.resultTitle}>Generated Text:</h3>
+          <h3>Based on your selections, you are most like:</h3>
           <div className={styles.generatedText}>
+            <h4>
             <GetOpenAI
               pairedOptions={submittedOptions}
               selectedOptionsArray={Object.values(selectedOptions)}
               questions={processedData}
             />
+            </h4>
           </div>
         </div>
       )}
