@@ -1,109 +1,91 @@
 'use client'
+
 import React, { useState, useEffect } from 'react';
-import GetOpenAI from '../../utilities/getOpenAI';
-import Card from '../../components/Card';
-import getAirtableData from '../../utilities/getAirtableData';
-import styles from '../global.css'
+import Card from '@/components/Card';
+import styles from 'src/components/Card.module.css';
 
 const HomePage = () => {
   const [processedData, setProcessedData] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState({});
+  const [selectedOptions, setSelectedOptions] = useState([]);
   const [submittedOptions, setSubmittedOptions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [generatedText, setGeneratedText] = useState([""]);
+  const [response, setResponse] = useState(null);
 
   const handleCardSelect = (questionId, option) => {
-    setSelectedOptions((prevOptions) => ({
-      ...prevOptions,
-      [questionId]: option,
-    }));
-  };
-
-  const getUnselectedOptions = (questionId) => {
-    const selectedOption = selectedOptions[questionId];
-    const options =
-      processedData.find((record) => record.id === questionId)?.options || [];
-    return options.filter((option) => option !== selectedOption);
+    setSelectedOptions((prevOptions) => [
+      ...prevOptions.filter((item) => item.questionId !== questionId),
+      { questionId, option },
+    ]);
+    console.log(`Selected option for question ${questionId}: ${option}`);
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
+    const prompt = selectedOptions.map(opt => opt.option).join(' ');
 
-    const pairedOptions = processedData.map((record) => ({
-      selected: selectedOptions[record.id],
-      notSelected: getUnselectedOptions(record.id)[0], // Assuming only 2 options per question
-      text: selectedOptions[record.id],
-    }));
+    if (!prompt.trim()) {
+        console.error('Empty or invalid prompt');
+        return;
+    }
+    try {
+        const response = await fetch('api/openai', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt }), // This sends the prompt to the server
+            
+        });console.log(prompt);
 
-    console.log('Paired Options:', pairedOptions);
-    setSubmittedOptions(pairedOptions);
-    setLoading(false);
-  };
+        if (response.ok) {
+            const data = await response.json();
+            setGeneratedText(data.completion.choices[0].text.trim().split('\n'));
+        } else {
+            console.error('API request failed');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getAirtableData();
-        setProcessedData(data);
+        const response = await fetch('/api/airtable'); // Updated the API endpoint
+        if (response.ok) {
+          const data = await response.json();
+          setProcessedData(data.result); // Access the data using the 'result' key
+        } else {
+          console.error('Error fetching data:', response.statusText);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     }
-
     fetchData();
-  }, []);
+    const revalidate = 3600 // revalidate at most every hour
+}, []);
 
   return (
-    
     <div className={styles.container}>
-    <img src="/title.png" alt="Title Image" className={styles.titleImage}/>
-      
-      
-
+      <img src="title.png" alt="Title Image" className={styles.titleImage} />
       {processedData.map((record) => (
         <div key={record.id}>
           <Card
             options={record.options}
-            selectedOption={selectedOptions[record.id]}
+            selectedOption={selectedOptions.find((item) => item.questionId === record.id)?.option || ''}
             onSelect={(option) => handleCardSelect(record.id, option)}
           />
         </div>
       ))}
-     <div style={{ textAlign: 'center' }}>
-      <button onClick={handleSubmit} className={styles.button}>
-        Submit
-      </button></div>
-
-     {/*  {submittedOptions.length > 0 && (
-        <div className={styles.resultContainer}>
-          <h3 className={styles.resultTitle}>Loading...</h3>
-          <div className={styles.generatedText}>
-            <p> Based on your selected options, you are more... </p> */}
-{/*             {submittedOptions.map(({ selected, notSelected, text }, index) => (
-              <p key={index}>
-                You are more {selected ? text : notSelected} than{' '}
-                {selected ? notSelected : text}
-              </p> */}
-            
-         {/*  </div>
+       <div style={{ textAlign: 'center' }}>
+        <button onClick={handleSubmit}>Submit</button>
+      </div>
+        <div>
+        <h3>Based on your selections, you are most like:</h3>
+          {generatedText }
         </div>
-      )}
- */}
-      {submittedOptions.length > 0 && (
-        <div className={styles.resultContainer}>
-          <h3>Based on your selections, you are most like:</h3>
-          <div className={styles.generatedText}>
-            <h4>
-            <GetOpenAI
-              pairedOptions={submittedOptions}
-              selectedOptionsArray={Object.values(selectedOptions)}
-              questions={processedData}
-            />
-            </h4>
-          </div>
-        </div>
-      )}
     </div>
-  );
-};
+  )};
 
 export default HomePage;
