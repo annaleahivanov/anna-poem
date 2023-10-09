@@ -1,0 +1,9 @@
+
+
+{ source: "Modernism 1898", target: "Modernism 1905", sourcecolor: "Russia", targetcolor: "Russia", linklabel: "Chekhov", sourceyear: 1898, targetyear: 1905, value: 1 },
+            { source: "Modernism 1898", target: "Paris", sourcecolor: "Russia", targetcolor: "Paris", linklabel: "Diaghilev", sourceyear: 1898, targetyear: 1905, value: 1 },
+            { source: "Avant Garde 1910", target: "Avant Garde 1930", sourcecolor: "Russia", targetcolor: "Russia", linklabel: "Larionov", sourceyear: 1910, targetyear: 1930, value: 2 },
+{ source: "Modernism 1905", target: "Modernism 1930", sourcecolor: "Russia", targetcolor: "Russia", linklabel: "Larionov", sourceyear: 1905, targetyear: 1917, value: 2 },
+
+{ source: "Kyiv 1879", target: "Avant Garde 1910", sourcecolor: "Ukraine", targetcolor: "Russia", linklabel: "Malevich", sourceyear: 1879, targetyear: 1917, value: 2 },
+
