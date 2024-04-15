@@ -4,7 +4,7 @@ import Poem from '../components/Poem.js';
 function MyPoem() {
   return (
     <div>
-      <Poem title="Ode to a Nightingale" text="My heart aches, and a drowsy numbness pains..." translation= {"я вас любил"}/>
+      <Poem title="I loved you" text="My heart aches, and a drowsy numbness pains..." translation= {"я вас любил"}/>
     </div>
   );
 }
